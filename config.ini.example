@@ -1,0 +1,10 @@
+[Airtable]
+AIRTABLE_BASE_ID = 
+AIRTABLE_API_KEY = 
+AIRTABLE_TABLE_NAME = 
+VIEW_NAME = 
+
+[Gmail]
+CREDENTIALS_FILE = credentials.json
+GMAIL_USER_ID = 
+EMAIL_CC = hi@gaiconf.com

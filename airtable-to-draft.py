@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from jinja2 import Environment, FileSystemLoader
 
 # Constants for file paths
 TOKEN_FILE = "token.json"  # File to store Gmail API token
@@ -93,6 +94,11 @@ def main():
     # Main function to process records from Airtable and create email drafts
     airtable_data = get_airtable_data()
     if airtable_data:
+
+        # Initialize Jinja2 environment
+        env = Environment(loader=FileSystemLoader('templates'))
+        template = env.get_template('email_template.html')
+
         for record in airtable_data['records']:
             # Process each record
             record_id = record['id']
@@ -105,20 +111,7 @@ def main():
 
             # Email content with HTML formatting
             email_subject = f"2024 Generative AI 年會贊助募集 x {company_name}"
-            email_body = f"""
-<html>
-  <head></head>
-  <body>
-    <p>{contact_name}，</p>
-    <p>我是布丁，負責「2024 Generative AI 年會」的贊助洽談，很高興知道你們有意願贊助年會。</p>
-    <p>我們第二屆年會訂在 2024/5/25，預計是線下 500 人以上的規模。附件是我們的贊助書，如果貴公司能夠在農曆年前就確認贊助意向的話，我們有提前確認的優惠方案（見贊助書）。</p>
-    <p>贊助書連結：<br><a href="https://drive.google.com/file/d/1B226726vLkpeuwXRIePm7BACiHFhLIvj/view?usp=sharing">2024 Generative AI 年會贊助書</a></p>
-    <p>關於年會更多資訊可以參考年會官網：<br><a href="https://2024.gaiconf.com/">https://2024.gaiconf.com/</a></p>
-    <p>期盼您的回覆，並再次感謝您對「2024 Generative AI 年會」的大力支持和關注。</p>
-    <p>順祝商祺，<br>「2024 Generative AI 年會」製作委員會 敬上</p>
-  </body>
-</html>
-"""
+            email_body = template.render(contact_name=contact_name, company_name=company_name)
 
             print(f"Preparing draft: {email_subject}")
             creds = get_gmail_credentials()
